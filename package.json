@@ -1,0 +1,37 @@
+{
+  "name": "api-sales",
+  "version": "1.0.0",
+  "description": "rest api for sales in nodejs and mysql.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geraldogenuca/api-sales.git"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "nodejs",
+    "mysql",
+    "mysql",
+    "javascript"
+  ],
+  "author": "gegsdeveloper",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geraldogenuca/api-sales/issues"
+  },
+  "homepage": "https://github.com/geraldogenuca/api-sales#readme",
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.7"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.4"
+  }
+}
