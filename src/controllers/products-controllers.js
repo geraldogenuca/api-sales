@@ -1,4 +1,5 @@
 require('dotenv').config()
+
 const client = require('../config/mysql')
 
 
@@ -16,7 +17,7 @@ exports.getProducts = async (req, res) => {
                         product_price: product.product_price,
                         request: {
                             type: 'GET',
-                            description: 'Register product!',
+                            description: 'Return all products!',
                             product_url: process.env.URL_API + 'products/' + product.product_id
                         }
                     }
@@ -26,6 +27,37 @@ exports.getProducts = async (req, res) => {
         return res.status(200).send(response)
     } catch (error) {
         return res.status(500).send({ error: error })
+    }
+}
+
+
+exports.detailProduct = async (req, res) => {
+    try {
+        const query = 'SELECT * FROM products WHERE product_id = ?;'
+        const result = await client.execute(query, [req.params.product_id])
+
+        if(result.length == 0) {
+            return res.status(404).send({message: 'Product not found!'})
+        }
+
+        const response = {
+            product: {
+                product_id: result[0].product_id,
+                product_name: result[0].product_name,
+                product_description: result[0].product_description,
+                product_image: result[0].product_image,
+                product_price: result[0].product_price,
+                request: {
+                    type: 'GET',
+                    description: 'Return product specifies.',
+                    product_url: process.env.URL_API + 'products/' + result[0].product_id
+                }
+            }
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).send({ error: error });
     }
 }
 
@@ -57,37 +89,6 @@ exports.createProduct = async (req, res) => {
         }
 
         return res.status(201).send(response);
-    } catch (error) {
-        return res.status(500).send({ error: error });
-    }
-}
-
-
-exports.detailProduct = async (req, res) => {
-    try {
-        const query = 'SELECT * FROM products WHERE product_id = ?;'
-        const result = await client.execute(query, [req.params.product_id])
-
-        if(result.length == 0) {
-            return res.status(404).send({message: 'Product not found!'})
-        }
-
-        const response = {
-            product: {
-                product_id: result[0].product_id,
-                product_name: result[0].product_name,
-                product_description: result[0].product_description,
-                product_image: result[0].product_image,
-                product_price: result[0].product_price,
-                request: {
-                    type: 'GET',
-                    description: 'Return product specify.',
-                    product_url: process.env.URL_API + 'products/' + result[0].product_id
-                }
-            }
-        }
-
-        return res.status(200).json(response);
     } catch (error) {
         return res.status(500).send({ error: error });
     }

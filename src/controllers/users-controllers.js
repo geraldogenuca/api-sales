@@ -1,5 +1,5 @@
 require('dotenv').config()
-const client2 = require('../config/mysql').pool
+
 const client = require('../config/mysql')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -20,8 +20,8 @@ exports.getUsers = async (req, res) => {
                         user_password: user.user_password,
                         user_phone: user.user_phone,
                         request: {
-                            type: 'POST',
-                            description: 'Register user!',
+                            type: 'GET',
+                            description: 'Return all users!',
                             url: process.env.URL_API + 'users/' + user.user_id
                         }
                     }
@@ -36,7 +36,39 @@ exports.getUsers = async (req, res) => {
 }
 
 
-exports.createUsers = async (req, res) => {
+exports.detailUser = async (req, res) => {
+    try {
+        const query = 'SELECT * FROM users WHERE user_id = ?;'
+
+        const result = await client.execute(query, [req.params.user_id])
+
+        if(result.length == 0) {
+            return res.status(404).send({message: 'User not found!'})
+        }
+
+        const response = {
+            user: {
+                user_id: result[0].user_id,
+                user_name: result[0].user_name,
+                user_email: result[0].user_email,
+                user_cpf: result[0].user_cpf,
+                user_phone: result[0].user_phone,
+                request: {
+                    type: 'GET',
+                    description: 'Return user specifies.',
+                    url: process.env.URL_API + 'users/' + result[0].user_id
+                }
+            }
+        }
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).send({ error: error });
+    }   
+}
+
+
+exports.createUser = async (req, res) => {
     try {        
         const query = `INSERT
                         INTO users (user_name, user_email, user_cpf, user_password, user_phone)
@@ -103,37 +135,6 @@ exports.loginUser = async (req, res) => {
     }
 }
 
-
-exports.detailUser = async (req, res) => {
-    try {
-        const query = 'SELECT * FROM users WHERE user_id = ?;'
-
-        const result = await client.execute(query, [req.params.user_id])
-
-        if(result.length == 0) {
-            return res.status(404).send({message: 'User not found!'})
-        }
-
-        const response = {
-            user: {
-                user_id: result[0].user_id,
-                user_name: result[0].user_name,
-                user_email: result[0].user_email,
-                user_cpf: result[0].user_cpf,
-                user_phone: result[0].user_phone,
-                request: {
-                    type: 'GET',
-                    description: 'Return user specify.',
-                    url: process.env.URL_API + 'users/' + result[0].user_id
-                }
-            }
-        }
-
-        return res.status(200).json(response);
-    } catch (error) {
-        return res.status(500).send({ error: error });
-    }   
-}
 
 exports.updatedUser = async (req, res) => {
     try {
